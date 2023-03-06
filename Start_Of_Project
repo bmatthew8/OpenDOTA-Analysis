@@ -1,0 +1,82 @@
+# This is a sample Python script.
+
+# Press Shift+F10 to execute it or replace it with your code.
+# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+import requests
+import requests as requests
+
+
+def basicMatchGET(ID):
+    #grab match Data from one match
+    response = requests.get(baseURL+"matches/"+ID)
+    #print(response.json())
+    return response.json()
+
+
+
+def getProfile(playerID):
+    #Grab profile for one ID
+    response = requests.get(baseURL+"players/"+playerID)
+    #print(response.json())
+    return response.json()
+
+def get20Matches(playerID,hero_id):
+    if hero_id == "noHero":
+        response = requests.get(baseURL+"players/"+playerID+"/recentMatches")
+    else:
+        response = requests.get(baseURL+"players/"+playerID+"/recentMatches?hero_id=" + hero_id)
+    data = response.json()
+    #print(data)
+    #print(len(data))
+    return data
+
+def getMatchesOnePlayer(playerID):
+    response = requests.get(baseURL+"players/"+playerID+"/Matches")
+    data = response.json()
+    print(data)
+    print(len(data))
+
+    return data
+
+
+
+def getPlayerWinLossWithHero(playerID, hero_id):
+    #Grab win loss for one player with one hero
+    response = requests.get(baseURL + "players/" + playerID + "/wl?hero_id=" + hero_id)
+    #print response.json()
+    return response.json()
+
+def GameStats(playerID,hero_id,games):
+    stats = {}
+    if games == 20:
+        data = get20Matches(playerID,hero_id)
+    #else:
+        #do the full profile thing here?
+    print(data)
+    for x in range(len(data)):
+        stats[x] = {"matchID": data[x]['match_id'], "playerSlot":data[x]['player_slot'], "kills":data[x]['kills'], "assists":data[x]['assists'],"deaths":data[x]['deaths'], "duration":data[x]['duration']}
+    print(stats)
+    return stats
+
+def computeAverage(dataset, stat):
+    total = 0
+    for x in dataset:
+        total = total+dataset[x][stat]
+    print(total/len(dataset))
+    return total/len(dataset)
+if __name__ == '__main__':
+    baseURL = "https://api.opendota.com/api/"
+    ID = "6255270002"
+    myPlayerID = "143141886"
+    hero_id = "25"
+    games=20
+    #lina
+    #basicMatchGET(ID)
+    #getProfile(myPlayerID)
+    #getPlayerWinLossWithHero(myPlayerID, hero_id)
+    #get20Matches(myPlayerID,"noHero")
+    #getMatchesOnePlayer(myPlayerID)
+    dataset = GameStats(myPlayerID,hero_id,games)
+    computeAverage(dataset, 'deaths')
+
+# See PyCharm help at https://www.jetbrains.com/help/pycharm/
